@@ -1,1 +1,7 @@
 .DS_Store
+*.o
+*.gch
+*.pch
+*.out
+*.dSYM/
+.#*
