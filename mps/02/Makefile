@@ -14,5 +14,8 @@ test-all: sudoku
 test-one: sudoku
 	head -10 p096_sudoku.txt | ./sudoku
 
+diff: sudoku
+	./sudoku < p096_sudoku.txt | diff - solutions.txt 
+
 clean:
 	rm -f $(OBJS) sudoku
