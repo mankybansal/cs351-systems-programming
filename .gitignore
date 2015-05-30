@@ -5,3 +5,8 @@
 *.out
 *.dSYM/
 .#*
+
+# executables
+a.out
+hello
+sudoku
