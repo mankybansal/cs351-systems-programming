@@ -14,6 +14,9 @@ test-all: sudoku
 test-one: sudoku
 	/usr/bin/head -10 p096_sudoku.txt | ./sudoku
 
+test-hard: sudoku
+	./sudoku < top95.txt
+
 diff: sudoku
 	./sudoku < p096_sudoku.txt | /usr/bin/diff - solutions.txt
 
