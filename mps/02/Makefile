@@ -12,10 +12,13 @@ test-all: sudoku
 	./sudoku < p096_sudoku.txt
 
 test-one: sudoku
-	head -10 p096_sudoku.txt | ./sudoku
+	/usr/bin/head -10 p096_sudoku.txt | ./sudoku
 
 diff: sudoku
-	./sudoku < p096_sudoku.txt | diff - solutions.txt 
+	./sudoku < p096_sudoku.txt | /usr/bin/diff - solutions.txt
+
+leaktest: sudoku
+	/usr/bin/valgrind ./sudoku < p096_sudoku.txt
 
 clean:
 	rm -f $(OBJS) sudoku
