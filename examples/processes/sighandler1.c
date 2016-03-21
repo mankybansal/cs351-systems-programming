@@ -10,6 +10,8 @@ void sigint_handler (int sig) {
 
 int main () {
     signal(SIGINT, sigint_handler);
-    while (1)
+    while (1) {
         pause();
+        printf("Back in main\n");
+    }
 }
