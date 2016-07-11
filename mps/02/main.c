@@ -3,29 +3,6 @@
 #include <string.h>
 #include "hashtable.h"
 
-void populate_hashtable(hashtable_t *ht) {
-  char word[100];
-  FILE *infile = fopen("/usr/share/dict/words", "r");
-  int len, i;
-  char *key, *val;
-
-  while (fgets(word, sizeof(word), infile)) {
-    len = strlen(word);
-    if (word[len-1] == '\n') {
-      word[len-1] = '\0';
-      len--;
-    }
-    key = malloc(len+1);
-    val = malloc(len+1);
-    strcpy(key, word);
-    for (i=0; i<len; i++) {
-      val[i] = key[len-i-1];
-    }
-    val[len] = '\0';
-    ht_put(ht, key, val);
-  }
-}
-
 int print_iter(char *key, void *val) {
   printf("%s -> %s\n", key, (char *)val);
   return 1;
