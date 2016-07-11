@@ -1,3 +1,6 @@
+#ifndef HASHTABLE_T
+#define HASHTABLE_T
+
 typedef struct hashtable hashtable_t;
 typedef struct bucket bucket_t;
 
@@ -22,3 +25,5 @@ void  ht_iter(hashtable_t *ht, int (*f)(char *, void *));
 void  ht_rehash(hashtable_t *ht, unsigned long newsize);
 int   ht_max_chain_length(hashtable_t *ht);
 void  free_hashtable(hashtable_t *ht);
+
+#endif
