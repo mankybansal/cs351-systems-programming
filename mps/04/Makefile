@@ -1,30 +1,95 @@
+# Makefile for the CS:APP Shell Lab
+
+DRIVER = ./sdriver.pl
+TSH = ./tsh
+TSHREF = ./tshref
+TSHARGS = "-p"
 CC = gcc
 CFLAGS = -Wall -g
-FILES = ./cachesim
+FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
 
-all: ./cachesim
+all: $(FILES)
 
-test01: all
-	./cachesim 8 1 1 < trace01.txt 
-	./cachesim 8 4 1 < trace01.txt
-	./cachesim 16 1 1 < trace01.txt
-	./cachesim 16 1 16 < trace01.txt
-	./cachesim 16 1 32 < trace01.txt
+##################
+# Regression tests
+##################
 
-test02: all
-	./cachesim 16 1 1 < trace02.txt 
-	./cachesim 16 1 8 < trace02.txt
-	./cachesim 16 1 16 < trace02.txt
-	./cachesim 1024 1 1 < trace02.txt
-	./cachesim 128 1 8 < trace02.txt
+# Run tests using the student's shell program
+test01:
+	$(DRIVER) -t trace01.txt -s $(TSH) -a $(TSHARGS)
+test02:
+	$(DRIVER) -t trace02.txt -s $(TSH) -a $(TSHARGS)
+test03:
+	$(DRIVER) -t trace03.txt -s $(TSH) -a $(TSHARGS)
+test04:
+	$(DRIVER) -t trace04.txt -s $(TSH) -a $(TSHARGS)
+test05:
+	$(DRIVER) -t trace05.txt -s $(TSH) -a $(TSHARGS)
+test06:
+	$(DRIVER) -t trace06.txt -s $(TSH) -a $(TSHARGS)
+test07:
+	$(DRIVER) -t trace07.txt -s $(TSH) -a $(TSHARGS)
+test08:
+	$(DRIVER) -t trace08.txt -s $(TSH) -a $(TSHARGS)
+test09:
+	$(DRIVER) -t trace09.txt -s $(TSH) -a $(TSHARGS)
+test10:
+	$(DRIVER) -t trace10.txt -s $(TSH) -a $(TSHARGS)
+test11:
+	$(DRIVER) -t trace11.txt -s $(TSH) -a $(TSHARGS)
+test12:
+	$(DRIVER) -t trace12.txt -s $(TSH) -a $(TSHARGS)
+test13:
+	$(DRIVER) -t trace13.txt -s $(TSH) -a $(TSHARGS)
+test14:
+	$(DRIVER) -t trace14.txt -s $(TSH) -a $(TSHARGS)
+test15:
+	$(DRIVER) -t trace15.txt -s $(TSH) -a $(TSHARGS)
+test16:
+	$(DRIVER) -t trace16.txt -s $(TSH) -a $(TSHARGS)
+test17:
+	$(DRIVER) -t trace17.txt -s $(TSH) -a $(TSHARGS)
+test18:
+	$(DRIVER) -t trace18.txt -s $(TSH) -a $(TSHARGS)
+test19:
+	$(DRIVER) -t trace19.txt -s $(TSH) -a $(TSHARGS)
+test20:
+	$(DRIVER) -t trace20.txt -s $(TSH) -a $(TSHARGS)
 
-test03: all
-	bunzip2 -c trace03.txt.bz2 | ./cachesim 128 1 8
-	bunzip2 -c trace03.txt.bz2 | ./cachesim 128 8 16
-	bunzip2 -c trace03.txt.bz2 | ./cachesim 512 8 32
-	bunzip2 -c trace03.txt.bz2 | ./cachesim 1024 8 64
+# Run the tests using the reference shell program
+rtest01:
+	$(DRIVER) -t trace01.txt -s $(TSHREF) -a $(TSHARGS)
+rtest02:
+	$(DRIVER) -t trace02.txt -s $(TSHREF) -a $(TSHARGS)
+rtest03:
+	$(DRIVER) -t trace03.txt -s $(TSHREF) -a $(TSHARGS)
+rtest04:
+	$(DRIVER) -t trace04.txt -s $(TSHREF) -a $(TSHARGS)
+rtest05:
+	$(DRIVER) -t trace05.txt -s $(TSHREF) -a $(TSHARGS)
+rtest06:
+	$(DRIVER) -t trace06.txt -s $(TSHREF) -a $(TSHARGS)
+rtest07:
+	$(DRIVER) -t trace07.txt -s $(TSHREF) -a $(TSHARGS)
+rtest08:
+	$(DRIVER) -t trace08.txt -s $(TSHREF) -a $(TSHARGS)
+rtest09:
+	$(DRIVER) -t trace09.txt -s $(TSHREF) -a $(TSHARGS)
+rtest10:
+	$(DRIVER) -t trace10.txt -s $(TSHREF) -a $(TSHARGS)
+rtest11:
+	$(DRIVER) -t trace11.txt -s $(TSHREF) -a $(TSHARGS)
+rtest12:
+	$(DRIVER) -t trace12.txt -s $(TSHREF) -a $(TSHARGS)
+rtest13:
+	$(DRIVER) -t trace13.txt -s $(TSHREF) -a $(TSHARGS)
+rtest14:
+	$(DRIVER) -t trace14.txt -s $(TSHREF) -a $(TSHARGS)
+rtest15:
+	$(DRIVER) -t trace15.txt -s $(TSHREF) -a $(TSHARGS)
+rtest16:
+	$(DRIVER) -t trace16.txt -s $(TSHREF) -a $(TSHARGS)
 
+# clean up
 clean:
 	rm -rf $(FILES) *.o *~ *.dSYM
-
-
