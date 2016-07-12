@@ -25,12 +25,18 @@ void *ht_get(hashtable_t *ht, char *key) {
   return NULL;
 }
 
+void ht_del(hashtable_t *ht, char *key) {
+}
+
 void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
 }
 
-void free_hashtable(hashtable_t *ht) {
+void ht_rehash(hashtable_t *ht, unsigned long newsize) {
 }
 
 int ht_max_chain_length(hashtable_t *ht) {
   return 0;
+}
+
+void free_hashtable(hashtable_t *ht) {
 }
