@@ -1,0 +1,28 @@
+Creating hashtable of size 10
+Inserting one => two
+Inserting three => four
+Inserting five => six
+Inserting seven => eight
+Inserting nine => ten
+Printing hashtable info
+seven -> eight
+five -> six
+nine -> ten
+three -> four
+one -> two
+Max chain length = 3
+Inserting one => eleven
+Inserting five => twelve
+Printing hashtable info
+seven -> eight
+five -> twelve
+nine -> ten
+three -> four
+one -> eleven
+Max chain length = 3
+Looking up key one
+Found value eleven
+Looking up key three
+Found value four
+Looking up key five
+Found value twelve
