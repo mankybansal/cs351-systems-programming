@@ -48,5 +48,8 @@ diff05: hashtable
 diff06: hashtable
 	@./hashtable trace06.txt | diff - rtrace06.txt
 
+leakcheck: hashtable
+	@valgrind --leak-check=full ./hashtable trace06.txt
+
 clean:
 	rm -f $(OBJS) hashtable hashtable-demo hashtable-demo.o
