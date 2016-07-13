@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -g -Wall -O2
+CFLAGS  = -g -Wall
 SRCS    = hashtable.c main.c
 OBJS    = $(SRCS:.c=.o)
 SED     = sed
