@@ -61,24 +61,6 @@ void free_hashtable(hashtable_t *ht) {
   free(ht); // FIXME: must free all substructures!
 }
 
-int ht_max_chain_length(hashtable_t *ht) {
-  bucket_t *b;
-  unsigned long i;
-  int max_len = 0, len;
-  for (i=0; i<ht->size; i++) {
-    b = ht->buckets[i];
-    len = 0;
-    while (b) {
-      len++;
-      b = b->next;
-    }
-    if (max_len < len) {
-      max_len = len;
-    }
-  }
-  return max_len;
-}
-
 /* TODO */
 void  ht_del(hashtable_t *ht, char *key) {
 }
