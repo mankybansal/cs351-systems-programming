@@ -5,12 +5,9 @@ Inserting five => six
 Inserting seven => eight
 Inserting nine => ten
 Printing hashtable info
-seven -> eight
-five -> six
-nine -> ten
-three -> four
-one -> two
+Num buckets = 5
 Max chain length = 3
+Avg chain length = 1.67
 Looking up key one
 Found value two
 Looking up key three
