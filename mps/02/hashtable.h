@@ -23,7 +23,6 @@ void *ht_get(hashtable_t *ht, char *key);
 void  ht_del(hashtable_t *ht, char *key);
 void  ht_iter(hashtable_t *ht, int (*f)(char *, void *));
 void  ht_rehash(hashtable_t *ht, unsigned long newsize);
-int   ht_max_chain_length(hashtable_t *ht);
 void  free_hashtable(hashtable_t *ht);
 
 #endif

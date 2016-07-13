@@ -11,6 +11,29 @@ int print_iter(char *key, void *val) {
   return 1;
 }
 
+void print_ht_stats(hashtable_t *ht) {
+  bucket_t *b;
+  unsigned long idx, len, max_len=0, num_buckets=0, num_chains=0;
+  for (idx=0; idx<ht->size; idx++) {
+    b = ht->buckets[idx];
+    len = 0;
+    while (b) {
+      len++;
+      num_buckets++;
+      b = b->next;
+    }
+    if (len > 0) {
+      num_chains++;
+    }
+    if (max_len < len) {
+      max_len = len;
+    }
+  }
+  printf("Num buckets = %lu\n", num_buckets);
+  printf("Max chain length = %lu\n", max_len);
+  printf("Avg chain length = %0.2f\n", (float)num_buckets / num_chains);
+}
+
 void eval_tracefile(char *filename) {
   FILE *infile;
   int ht_size;
@@ -57,8 +80,7 @@ void eval_tracefile(char *filename) {
       break;
     case 'i':
       printf("Printing hashtable info\n");
-      ht_iter(ht, print_iter);
-      printf("Max chain length = %d\n", ht_max_chain_length(ht));
+      print_ht_stats(ht);
       break;
     default:
       printf("Bad tracefile directive (%c)", buf[0]);
