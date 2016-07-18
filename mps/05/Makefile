@@ -1,30 +1,19 @@
+# Students' Makefile for the Malloc Lab
 CC = gcc
-CFLAGS = -Wall -g
-FILES = ./cachesim
+CFLAGS = -Wall -Werror -g
 
-all: ./cachesim
+OBJS = mdriver.o mm.o memlib.o fsecs.o fcyc.o clock.o ftimer.o
 
-test01: all
-	./cachesim 8 1 1 < trace01.txt 
-	./cachesim 8 4 1 < trace01.txt
-	./cachesim 16 1 1 < trace01.txt
-	./cachesim 16 1 16 < trace01.txt
-	./cachesim 16 1 32 < trace01.txt
+mdriver: $(OBJS)
+	$(CC) $(CFLAGS) -o mdriver $(OBJS)
 
-test02: all
-	./cachesim 16 1 1 < trace02.txt 
-	./cachesim 16 1 8 < trace02.txt
-	./cachesim 16 1 16 < trace02.txt
-	./cachesim 1024 1 1 < trace02.txt
-	./cachesim 128 1 8 < trace02.txt
-
-test03: all
-	bunzip2 -c trace03.txt.bz2 | ./cachesim 128 1 8
-	bunzip2 -c trace03.txt.bz2 | ./cachesim 128 8 16
-	bunzip2 -c trace03.txt.bz2 | ./cachesim 512 8 32
-	bunzip2 -c trace03.txt.bz2 | ./cachesim 1024 8 64
+mdriver.o: mdriver.c fsecs.h fcyc.h clock.h memlib.h config.h mm.h
+memlib.o: memlib.c memlib.h
+mm.o: mm.c mm.h memlib.h
+fsecs.o: fsecs.c fsecs.h config.h
+fcyc.o: fcyc.c fcyc.h
+ftimer.o: ftimer.c ftimer.h config.h
+clock.o: clock.c clock.h
 
 clean:
-	rm -rf $(FILES) *.o *~ *.dSYM
-
-
+	rm -f *~ *.o mdriver
