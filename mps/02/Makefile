@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -g -Wall -O2
+CFLAGS  = -g -Wall
 SRCS    = hashtable.c main.c
 OBJS    = $(SRCS:.c=.o)
 SED     = sed
@@ -47,6 +47,9 @@ diff05: hashtable
 
 diff06: hashtable
 	@./hashtable trace06.txt | diff - rtrace06.txt
+
+leakcheck: hashtable
+	@valgrind --leak-check=full ./hashtable trace06.txt
 
 clean:
 	rm -f $(OBJS) hashtable hashtable-demo hashtable-demo.o
