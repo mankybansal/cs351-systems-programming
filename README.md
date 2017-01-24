@@ -1,7 +1,7 @@
 CS351 - Systems Programming 
 ==============================  
   
-SPRING 2017  
+Spring 2017  
 -------------  
   
 > ### Name
