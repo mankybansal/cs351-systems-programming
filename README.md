@@ -2,8 +2,8 @@ CS351 - Systems Programming
 
 SPRING 2017
 
-NAME: Mayank Bansal<br />
-EMAIL: mbansal5@hawk.iit.edu<br />
+NAME: Mayank Bansal<br />  
+EMAIL: mbansal5@hawk.iit.edu<br />  
 ID: A20392482
 
 
