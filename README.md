@@ -1,8 +1,7 @@
-CS351 - Systems Programming 
-============================== 
+#CS351 - Systems Programming 
+###Spring 2017  
+
 *** 
-Spring 2017  
--------------  
  
 #### Name
 Mayank Bansal
