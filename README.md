@@ -1,8 +1,29 @@
-# CS 351 Code Repository
+CS351 - Systems Programming
 
-This is the public repository for CS 351: Systems Programming, which contains
-sample code (some of which are used in lecture demos) and template code for
-machine problems.
+SPRING 2017
 
-After cloning this repository, you should replace the contents of this README
-file with, at minimum, your name, email address, and student ID.
+NAME: Mayank Bansal
+EMAIL: mbansal5@hawk.iit.edu
+ID: A20392482
+
+/* 
+
+The code in this repo will make you cry, this safety pig is
+provided below for your benefit. Copy the code below the safety pig
+and hope all goes well.
+                         _
+ _._ _..._ .-',     _.._(`))
+'-. `     '  /-._.-'    ',/
+   )         \            '.
+  / _    _    |             \
+ |  a    a    /              |
+ \   .-.                     ;
+  '-('' ).-'       ,'       ;
+     '-;           |      .'
+        \           \    /
+        | 7  .__  _.-\   \
+        | |  |  ``/  /`  /
+       /,_|  |   /,_/   /
+          /,_/      '`-'
+
+*/
