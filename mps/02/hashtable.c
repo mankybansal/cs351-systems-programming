@@ -42,9 +42,8 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
                 break;
             }
         }
-    }else{
-        ht->buckets[idx] = b;
     }
+
 
     if (flag) {
         ht->buckets[idx] = b;
