@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "hashtable.h"
 
 /* Daniel J. Bernstein's "times 33" string hash function, from comp.lang.C;
@@ -26,27 +27,31 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
     unsigned int idx = hash(key) % ht->size;
     bucket_t *b = malloc(sizeof(bucket_t));
 
+    b->key = key;
+    b->val = val;
+    b->next = ht->buckets[idx];
 
-    // Iterate though list and check for same key. If key exists, update value
+    bucket_t *itr = ht->buckets[idx];
     int flag = 1;
-    bucket_t *itr = NULL;
-    for (itr = ht->buckets[idx]; itr->next != NULL; itr = itr->next) {
-        if (itr->key == key) {
-            itr->val = val;
-            printf("Found duplicate");
-            flag--;
-            break;
-        }
-    }
 
-    // If flag is true, the key doesn't exist, so make new bucket
-    if (flag) {
-        printf("Added at new bucket");
-        b->key = key;
-        b->val = val;
-        b->next = ht->buckets[idx];
+    if (itr != NULL) {
+        for (; itr->next != NULL; itr = itr->next) {
+            if (itr->key == key) {
+                itr->val = val;
+                flag--;
+                break;
+            }
+        }
+    }else{
         ht->buckets[idx] = b;
     }
+
+    if (flag) {
+        ht->buckets[idx] = b;
+    } else {
+        free(b);
+    }
+
 }
 
 void *ht_get(hashtable_t *ht, char *key) {
