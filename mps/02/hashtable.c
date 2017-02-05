@@ -29,7 +29,8 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
 
     // Iterate though list and check for same key. If key exists, update value
     int flag = 1;
-    for (bucket_t *itr = ht->buckets[idx]; itr->next != NULL; itr = itr->next) {
+    bucket_t *itr = NULL;
+    for (itr = ht->buckets[idx]; itr->next != NULL; itr = itr->next) {
         if (itr->key == key) {
             itr->val = val;
             flag--;
@@ -73,8 +74,8 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
 }
 
 void free_hashtable(hashtable_t *ht) {
-
-    for (int i = 0; i < ht->size; i++) {
+    int i;
+    for (i = 0; i < ht->size; i++) {
         bucket_t *curr;
         while ((curr = ht->buckets[i]) != NULL) {
             ht->buckets[i] = ht->buckets[i]->next;
@@ -94,9 +95,10 @@ void free_hashtable(hashtable_t *ht) {
 void ht_del(hashtable_t *ht, char *key) {
 
     unsigned int idx = hash(key) % ht->size;
+    bucket_t *prev = NULL, *itr;
 
     // Iterate through list
-    for (bucket_t *prev = NULL, *itr = ht->buckets[idx]; itr->next != NULL; prev = itr, itr = itr->next) {
+    for (itr = ht->buckets[idx]; itr->next != NULL; prev = itr, itr = itr->next) {
         if (itr->key == key) {
             // If clause for first element
             if (prev == NULL) {
