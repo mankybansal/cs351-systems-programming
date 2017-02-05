@@ -33,6 +33,7 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
     for (itr = ht->buckets[idx]; itr->next != NULL; itr = itr->next) {
         if (itr->key == key) {
             itr->val = val;
+            printf("Found duplicate");
             flag--;
             break;
         }
@@ -40,6 +41,7 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
 
     // If flag is true, the key doesn't exist, so make new bucket
     if (flag) {
+        printf("Added at new bucket");
         b->key = key;
         b->val = val;
         b->next = ht->buckets[idx];
@@ -84,7 +86,6 @@ void free_hashtable(hashtable_t *ht) {
         }
 
         free(curr);
-
         free(ht->buckets[i]);
     }
 
