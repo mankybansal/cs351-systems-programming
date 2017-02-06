@@ -82,7 +82,7 @@ void free_hashtable(hashtable_t *ht) {
             b = b->next;
         }
     }
-    free(b);
+    //free(b);
     free(ht->buckets);
 }
 
