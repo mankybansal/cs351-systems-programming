@@ -124,6 +124,7 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
             void *s = strdup(curr->val);
             ht_put(new_ht, c, s);
             curr = curr->next;
+            free(c);
         }
     }
 
