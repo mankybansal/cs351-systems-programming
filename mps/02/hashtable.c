@@ -129,14 +129,14 @@ void ht_del(hashtable_t *ht, char *key) {
             // If clause for first element
             if (prev == NULL) {
                 ht->buckets[idx] = itr->next;
-                free(itr);
             } else {
                 prev->next = itr->next; //Point previous element to next element
-                free(itr);
             }
             break;
         }
     }
+
+    free(itr);
 
 }
 
