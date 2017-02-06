@@ -37,8 +37,8 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
 
     for (; itr != NULL; itr = itr->next)
         if (strcmp(itr->key, key) == 0) {
-            free(itr->val);
-            itr->val = val;
+            strcpy(itr->val,val);
+            free(val);
             flag--;
             break;
         }
