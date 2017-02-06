@@ -76,45 +76,45 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
 }
 
 void free_hashtable(hashtable_t *ht) {
-    bucket_t *b;
-    unsigned long i;
-    for (i = 0; i < ht->size; i++) {
-        b = ht->buckets[i];
-        while (b) {
-            bucket_t *c = b;
-            b = b->next;
-            ht_del(ht, c->key);
-        }
-    }
-    free(b);
-    free(ht->buckets);
+//    bucket_t *b;
+//    unsigned long i;
+//    for (i = 0; i < ht->size; i++) {
+//        b = ht->buckets[i];
+//        while (b) {
+//            bucket_t *c = b;
+//            b = b->next;
+//            ht_del(ht, c->key);
+//        }
+//    }
+//    free(b);
+//    free(ht->buckets);
 }
 
 void ht_del(hashtable_t *ht, char *key) {
 
-    unsigned int idx = hash(key) % ht->size;
-    bucket_t *prev = NULL, *itr = ht->buckets[idx];
-
-    // Iterate through list
-    for (; itr != NULL; prev = itr, itr = itr->next)
-        if (strcmp(itr->key, key) == 0) {
-            // If clause for first element
-            if (prev == NULL)
-                ht->buckets[idx] = itr->next;
-            else
-                prev->next = itr->next;
-
-            free(itr->key);
-            free(itr->val);
-            free(itr);
-            break;
-        }
-
-
-    if (ht->buckets[idx] == NULL){
-        free(ht->buckets[idx]);
-        free(prev);
-    }
+//    unsigned int idx = hash(key) % ht->size;
+//    bucket_t *prev = NULL, *itr = ht->buckets[idx];
+//
+//    // Iterate through list
+//    for (; itr != NULL; prev = itr, itr = itr->next)
+//        if (strcmp(itr->key, key) == 0) {
+//            // If clause for first element
+//            if (prev == NULL)
+//                ht->buckets[idx] = itr->next;
+//            else
+//                prev->next = itr->next;
+//
+//            free(itr->key);
+//            free(itr->val);
+//            free(itr);
+//            break;
+//        }
+//
+//
+//    if (ht->buckets[idx] == NULL){
+//        free(ht->buckets[idx]);
+//        free(prev);
+//    }
 }
 
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
