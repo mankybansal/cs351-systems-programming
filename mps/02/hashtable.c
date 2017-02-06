@@ -45,20 +45,15 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
             break;
         }
 
-    if (flag) ht->buckets[idx] = b, free(itr);
-    else {
-        free(b);
-    }
-
+    (flag)? ht->buckets[idx] = b, free(itr) : free(b);
 }
 
 void *ht_get(hashtable_t *ht, char *key) {
     unsigned int idx = hash(key) % ht->size;
     bucket_t *b = ht->buckets[idx];
     while (b) {
-        if (strcmp(b->key, key) == 0) {
+        if (strcmp(b->key, key) == 0)
             return b->val;
-        }
         b = b->next;
     }
     return NULL;
@@ -70,9 +65,8 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
     for (i = 0; i < ht->size; i++) {
         b = ht->buckets[i];
         while (b) {
-            if (!f(b->key, b->val)) {
+            if (!f(b->key, b->val))
                 return; // abort iteration
-            }
             b = b->next;
         }
     }
