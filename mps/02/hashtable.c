@@ -42,8 +42,8 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
             flag--;
             break;
         }
-    (flag) ? ht->buckets[idx] = b, free(itr): free(b);
 
+    (flag) ? ht->buckets[idx] = b, free(itr): free(b);
 }
 
 void *ht_get(hashtable_t *ht, char *key) {
@@ -82,7 +82,7 @@ void free_hashtable(hashtable_t *ht) {
             b = b->next;
         }
     }
-    //free(b);
+    free(b);
     free(ht->buckets);
 }
 
@@ -122,9 +122,13 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
         while (curr) {
             char *c = strdup(curr->key);
             void *s = strdup(curr->val);
+
             ht_put(new_ht, c, s);
+            ht_del(ht,c);
             curr = curr->next;
         }
+
+
     }
 
     free_hashtable(ht);
