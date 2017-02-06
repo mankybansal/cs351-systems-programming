@@ -38,6 +38,7 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
     for (; itr != NULL; itr = itr->next)
         if (strcmp(itr->key, key) == 0) {
             free(itr->val);
+            free(key);
             itr->val = strdup(val);
             free(val);
             flag--;
@@ -45,7 +46,9 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
         }
 
     if (flag) ht->buckets[idx] = b, free(itr);
-    else free(b);
+    else {
+        free(b);
+    }
 
 }
 
