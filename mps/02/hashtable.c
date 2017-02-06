@@ -79,7 +79,7 @@ void free_hashtable(hashtable_t *ht) {
         b = ht->buckets[i];
         while (b) {
             ht_del(ht, b->key);
-            b = b->next;
+            if(b != NULL) b = b->next;
         }
     }
     free(b);
@@ -124,7 +124,6 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
             void *s = strdup(curr->val);
 
             ht_put(new_ht, c, s);
-            ht_del(ht,c);
             curr = curr->next;
         }
 
