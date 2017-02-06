@@ -5,6 +5,7 @@
 
 /* Daniel J. Bernstein's "times 33" string hash function, from comp.lang.C;
    See https://groups.google.com/forum/#!topic/comp.lang.c/lSKWXiuNOAk */
+
 unsigned long hash(char *str) {
     unsigned long hash = 5381;
     int c;
@@ -35,25 +36,13 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
     bucket_t *itr = ht->buckets[idx];
     int flag = 1;
 
-    for (; itr != NULL; itr = itr->next) {
-        //printf("\n\nFOUND\n\n");
+    for (; itr != NULL; itr = itr->next)
         if (strcmp(itr->key, key) == 0) {
             itr->val = val;
             flag--;
             break;
         }
-    }
-
-
-    if (flag) {
-        ht->buckets[idx] = b;
-    } else {
-        free(b);
-    }
-
-
-    //print_ht(ht);
-
+    (flag)? ht->buckets[idx] = b : free(b);
 }
 
 void *ht_get(hashtable_t *ht, char *key) {
@@ -84,8 +73,6 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
 
 /*
 void print_ht(hashtable_t *ht) {
-
-
     printf("\n------HASHTABLE--------\n");
     bucket_t *b;
     unsigned long i;
@@ -101,61 +88,34 @@ void print_ht(hashtable_t *ht) {
     printf("\n----------------------\n");
 }*/
 
-
 void free_hashtable(hashtable_t *ht) {
 
-    unsigned long int i;                                   // FIXME: must free all substructures!
-    bucket_t *b;
-    bucket_t *c;
+    unsigned long int i;
+    bucket_t *itr;
+    bucket_t *temp;
 
-    for (i = 0; i < (ht->size); i++) {                          //for all buckets in the linked list
-        b = ht->buckets[i];                                 //starting with the first
-        while (b) {                                         //if the bucket exists, go down the list clearing all of its contents till the end
-            free(b->key);
-            free(b->val);
-            c = b->next;
-            free(b);
-            b = c;
+    for (i = 0; i < (ht->size); i++) {
+        itr = ht->buckets[i];
+        while (itr) {
+            free(itr->key);
+            free(itr->val);
+            temp = itr->next;
+            free(itr);
+            itr = temp;
         }
-        //free(b);
-        //free(ht->buckets[i]);
     }
 }
 
-/*
-void free_hashtable(hashtable_t *ht) {
-
-    unsigned long i;
-    for (i = 0; i < ht->size; i++) {
-        bucket_t *curr = ht->buckets[i];
-        while (curr) {
-            free(curr->key);
-            free(curr->val);
-            curr = curr->next;
-        }
-        free(curr);
-        free(ht->buckets[i]);
-    }
-
-    //free(ht); // FIXME: must free all substructures!
-}*/
-
-/* TODO */
 void ht_del(hashtable_t *ht, char *key) {
 
-    //print_ht(ht);
     unsigned int idx = hash(key) % ht->size;
     bucket_t *prev = NULL, *itr = ht->buckets[idx];
 
-
-
     // Iterate through list
-    for (; itr != NULL; prev = itr, itr = itr->next) {
+    for (; itr != NULL; prev = itr, itr = itr->next)
         if (strcmp(itr->key, key) == 0) {
-
             // If clause for first element
             if (prev == NULL) {
-
                 ht->buckets[idx] = itr->next;
                 free(itr->key);
                 free(itr->val);
@@ -168,18 +128,12 @@ void ht_del(hashtable_t *ht, char *key) {
             }
             break;
         }
-    }
 
-    if (ht->buckets[idx] == NULL) {
+    if (ht->buckets[idx] == NULL)
         free(ht->buckets[idx]);
-    }
-
-
 }
 
-
 /*
-
 void print_ht_stats2(hashtable_t *ht) {
     bucket_t *b;
     unsigned long idx, len, max_len=0, num_buckets=0, num_chains=0;
@@ -207,9 +161,9 @@ void print_ht_stats2(hashtable_t *ht) {
 
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
 
-    /*hashtable_t *newht = malloc(sizeof(hashtable_t));
-    newht->size = newsize;
-    newht->buckets = calloc(sizeof(bucket_t *), newsize);
+    hashtable_t *new_ht = malloc(sizeof(hashtable_t));
+    new_ht->size = newsize;
+    new_ht->buckets = calloc(sizeof(bucket_t *), newsize);
 
     unsigned long i;
     for (i = 0; i < ht->size; i++) {
@@ -217,16 +171,12 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
         while (curr) {
             char *c = strdup(curr->key);
             void *s = strdup(curr->val);
-            ht_put(newht, c, s);
+            ht_put(new_ht, c, s);
             curr = curr->next;
-
         }
     }
 
     free_hashtable(ht);
-    *ht = *newht;
-    //free_hashtable(newht);
-    //print_ht(ht);
-    //print_ht_stats2(ht);*/
+    *ht = *new_ht;
 
 }
