@@ -38,14 +38,14 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
     for (; itr != NULL; itr = itr->next)
         if (strcmp(itr->key, key) == 0) {
             free(itr->val);
-            itr->val = strdup(val);;
+            itr->val = strdup(val);
             free(val);
             flag--;
             break;
         }
 
     if (flag) ht->buckets[idx] = b, free(itr);
-    else free(b);
+    else free(b),free(itr->key);
 
 }
 
