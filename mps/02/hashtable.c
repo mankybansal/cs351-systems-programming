@@ -43,7 +43,9 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
             break;
         }
 
-    (flag) ? ht->buckets[idx] = b, free(itr): free(b);
+    if (flag) ht->buckets[idx] = b, free(itr);
+    else free(b);
+
 }
 
 void *ht_get(hashtable_t *ht, char *key) {
@@ -107,8 +109,11 @@ void ht_del(hashtable_t *ht, char *key) {
             break;
         }
 
-    if (ht->buckets[idx] == NULL)
+
+    if (ht->buckets[idx] == NULL){
         free(ht->buckets[idx]);
+        free(prev);
+    }
 }
 
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
