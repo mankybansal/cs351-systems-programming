@@ -25,27 +25,27 @@ hashtable_t *make_hashtable(unsigned long size) {
 
 void ht_put(hashtable_t *ht, char *key, void *val) {
 
-//    unsigned int idx = hash(key) % ht->size;
-//    bucket_t *b = malloc(sizeof(bucket_t));
-//
-//    b->key = key;
-//    b->val = val;
-//    b->next = ht->buckets[idx];
-//
-//    bucket_t *itr = ht->buckets[idx];
-//    int flag = 1;
-//
-//    for (; itr != NULL; itr = itr->next)
-//        if (strcmp(itr->key, key) == 0) {
-//            free(itr->val);
-//            itr->val = strdup(val);;
-//            free(val);
-//            flag--;
-//            break;
-//        }
-//
-//    if (flag) ht->buckets[idx] = b, free(itr);
-//    else free(b);
+    unsigned int idx = hash(key) % ht->size;
+    bucket_t *b = malloc(sizeof(bucket_t));
+
+    b->key = key;
+    b->val = val;
+    b->next = ht->buckets[idx];
+
+    bucket_t *itr = ht->buckets[idx];
+    int flag = 1;
+
+    for (; itr != NULL; itr = itr->next)
+        if (strcmp(itr->key, key) == 0) {
+            free(itr->val);
+            itr->val = strdup(val);;
+            free(val);
+            flag--;
+            break;
+        }
+
+    if (flag) ht->buckets[idx] = b, free(itr);
+    else free(b);
 
 }
 
@@ -135,5 +135,5 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
 
     free_hashtable(ht);
     *ht = *new_ht;
-    free(new_ht);
+    free_hashtable(new_ht);
 }
