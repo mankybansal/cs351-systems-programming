@@ -25,7 +25,7 @@ hashtable_t *make_hashtable(unsigned long size) {
 
 void ht_put(hashtable_t *ht, char *key, void *val) {
 
-    /* FIXME: the current implementation doesn't update existing entries */
+     //FIXME: the current implementation doesn't update existing entries
     unsigned int idx = hash(key) % ht->size;
     bucket_t *b = malloc(sizeof(bucket_t));
 
@@ -42,7 +42,7 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
             flag--;
             break;
         }
-    (flag)? ht->buckets[idx] = b : free(b);
+    (flag) ? ht->buckets[idx] = b : free(b);
 }
 
 void *ht_get(hashtable_t *ht, char *key) {
@@ -89,19 +89,13 @@ void print_ht(hashtable_t *ht) {
 }*/
 
 void free_hashtable(hashtable_t *ht) {
-
-    unsigned long int i;
-    bucket_t *itr;
-    bucket_t *temp;
-
-    for (i = 0; i < (ht->size); i++) {
-        itr = ht->buckets[i];
-        while (itr) {
-            free(itr->key);
-            free(itr->val);
-            temp = itr->next;
-            free(itr);
-            itr = temp;
+    bucket_t *b;
+    unsigned long i;
+    for (i=0; i<ht->size; i++) {
+        b = ht->buckets[i];
+        while(b){
+            ht_del(ht,b->key);
+            b = b->next;
         }
     }
 }
@@ -178,5 +172,5 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
 
     free_hashtable(ht);
     *ht = *new_ht;
-
+    //free_hashtable(new_ht);
 }
