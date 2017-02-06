@@ -131,8 +131,8 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
         }
     }
 
-    free_hashtable(ht);
-    ht = make_hashtable(newsize);
+    free(ht->buckets);
     *ht = *new_ht;
+    free(new_ht);
 
 }
