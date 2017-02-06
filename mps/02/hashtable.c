@@ -92,29 +92,29 @@ void free_hashtable(hashtable_t *ht) {
 
 void ht_del(hashtable_t *ht, char *key) {
 
-//    unsigned int idx = hash(key) % ht->size;
-//    bucket_t *prev = NULL, *itr = ht->buckets[idx];
-//
-//    // Iterate through list
-//    for (; itr != NULL; prev = itr, itr = itr->next)
-//        if (strcmp(itr->key, key) == 0) {
-//            // If clause for first element
-//            if (prev == NULL)
-//                ht->buckets[idx] = itr->next;
-//            else
-//                prev->next = itr->next;
-//
-//            free(itr->key);
-//            free(itr->val);
-//            free(itr);
-//            break;
-//        }
-//
-//
-//    if (ht->buckets[idx] == NULL){
-//        free(ht->buckets[idx]);
-//        free(prev);
-//    }
+    unsigned int idx = hash(key) % ht->size;
+    bucket_t *prev = NULL, *itr = ht->buckets[idx];
+
+    // Iterate through list
+    for (; itr != NULL; prev = itr, itr = itr->next)
+        if (strcmp(itr->key, key) == 0) {
+            // If clause for first element
+            if (prev == NULL)
+                ht->buckets[idx] = itr->next;
+            else
+                prev->next = itr->next;
+
+            free(itr->key);
+            free(itr->val);
+            free(itr);
+            break;
+        }
+
+
+    if (ht->buckets[idx] == NULL){
+        free(ht->buckets[idx]);
+        free(prev);
+    }
 }
 
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
