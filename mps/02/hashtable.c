@@ -88,6 +88,7 @@ void free_hashtable(hashtable_t *ht) {
     }
     free(b);
     free(ht->buckets);
+    free(ht);
 }
 
 void ht_del(hashtable_t *ht, char *key) {
@@ -108,7 +109,6 @@ void ht_del(hashtable_t *ht, char *key) {
             free(itr);
             break;
         }
-
 
     if (!itr){
         free(itr);
@@ -132,6 +132,7 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
     }
 
     free_hashtable(ht);
+    ht = make_hashtable(newsize);
     *ht = *new_ht;
     free(new_ht);
 }
