@@ -191,6 +191,9 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
     free_hashtable(ht);
 
     *ht = *newht;
+
+
+    free_hashtable(htnew);
     //print_ht(ht);
     //print_ht_stats2(ht);
 
