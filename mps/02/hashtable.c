@@ -76,18 +76,18 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
 }
 
 void free_hashtable(hashtable_t *ht) {
-//    bucket_t *b;
-//    unsigned long i;
-//    for (i = 0; i < ht->size; i++) {
-//        b = ht->buckets[i];
-//        while (b) {
-//            bucket_t *c = b;
-//            b = b->next;
-//            ht_del(ht, c->key);
-//        }
-//    }
-//    free(b);
-//    free(ht->buckets);
+    bucket_t *b;
+    unsigned long i;
+    for (i = 0; i < ht->size; i++) {
+        b = ht->buckets[i];
+        while (b) {
+            bucket_t *c = b;
+            b = b->next;
+            ht_del(ht, c->key);
+        }
+    }
+    free(b);
+    free(ht->buckets);
 }
 
 void ht_del(hashtable_t *ht, char *key) {
