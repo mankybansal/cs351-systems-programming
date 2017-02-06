@@ -47,7 +47,7 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
 
     if (flag) {
         ht->buckets[idx] = b;
-    }else{
+    } else {
         free(b);
     }
 
@@ -101,6 +101,28 @@ void print_ht(hashtable_t *ht) {
     printf("\n----------------------\n");
 }*/
 
+
+void free_hashtable(hashtable_t *ht) {
+
+    unsigned long int i;                                   // FIXME: must free all substructures!
+    bucket_t *b;
+    bucket_t *c;
+
+    for (i = 0; i < (ht->size); i++) {                          //for all buckets in the linked list
+        b = ht->buckets[i];                                 //starting with the first
+        while (b) {                                         //if the bucket exists, go down the list clearing all of its contents till the end
+            free(b->key);
+            free(b->val);
+            c = b->next;
+            free(b);
+            b = c;
+        }
+        //free(b);
+        //free(ht->buckets[i]);
+    }
+}
+
+/*
 void free_hashtable(hashtable_t *ht) {
 
     unsigned long i;
@@ -116,7 +138,7 @@ void free_hashtable(hashtable_t *ht) {
     }
 
     //free(ht); // FIXME: must free all substructures!
-}
+}*/
 
 /* TODO */
 void ht_del(hashtable_t *ht, char *key) {
@@ -144,7 +166,7 @@ void ht_del(hashtable_t *ht, char *key) {
         }
     }
 
-    if(ht->buckets[idx]==NULL){
+    if (ht->buckets[idx] == NULL) {
         free(ht->buckets[idx]);
     }
 
