@@ -47,9 +47,10 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
 
     if (flag) {
         ht->buckets[idx] = b;
-    } else {
+    }else{
         free(b);
     }
+
 
     //print_ht(ht);
 
@@ -126,18 +127,27 @@ void ht_del(hashtable_t *ht, char *key) {
 
     // Iterate through list
     for (; itr != NULL; prev = itr, itr = itr->next) {
-        if (strcmp(itr->key,key)==0) {
+        if (strcmp(itr->key, key) == 0) {
             // If clause for first element
             if (prev == NULL) {
                 ht->buckets[idx] = itr->next;
+                free(itr->key);
+                free(itr->val);
+                free(itr);
             } else {
                 prev->next = itr->next; //Point previous element to next element
+                free(itr->key);
+                free(itr->val);
+                free(itr);
             }
             break;
         }
     }
 
-    free(itr);
+    if(ht->buckets[idx]==NULL){
+        free(ht->buckets[idx]);
+    }
+
 
 }
 
@@ -182,18 +192,13 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
             char *c = strdup(curr->key);
             void *s = strdup(curr->val);
             ht_put(newht, c, s);
-
             curr = curr->next;
+
         }
     }
 
-
     free_hashtable(ht);
-
     *ht = *newht;
-
-
-    free_hashtable(htnew);
     //print_ht(ht);
     //print_ht_stats2(ht);
 
