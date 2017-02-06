@@ -147,11 +147,15 @@ void ht_del(hashtable_t *ht, char *key) {
     unsigned int idx = hash(key) % ht->size;
     bucket_t *prev = NULL, *itr = ht->buckets[idx];
 
+
+
     // Iterate through list
     for (; itr != NULL; prev = itr, itr = itr->next) {
         if (strcmp(itr->key, key) == 0) {
+
             // If clause for first element
             if (prev == NULL) {
+
                 ht->buckets[idx] = itr->next;
                 free(itr->key);
                 free(itr->val);
@@ -203,7 +207,7 @@ void print_ht_stats2(hashtable_t *ht) {
 
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
 
-    hashtable_t *newht = malloc(sizeof(hashtable_t));
+    /*hashtable_t *newht = malloc(sizeof(hashtable_t));
     newht->size = newsize;
     newht->buckets = calloc(sizeof(bucket_t *), newsize);
 
@@ -221,7 +225,8 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
 
     free_hashtable(ht);
     *ht = *newht;
+    //free_hashtable(newht);
     //print_ht(ht);
-    //print_ht_stats2(ht);
+    //print_ht_stats2(ht);*/
 
 }
