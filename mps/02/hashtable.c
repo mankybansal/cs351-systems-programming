@@ -85,7 +85,6 @@ void free_hashtable(hashtable_t *ht) {
             b = b->next;
             ht_del(ht, c->key);
         }
-        free(ht->buckets[i]);
     }
     free(b);
     free(ht->buckets);
@@ -120,22 +119,21 @@ void ht_del(hashtable_t *ht, char *key) {
 
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
 
-    hashtable_t *new_ht = make_hashtable(newsize);
-
-    unsigned long i;
-    for (i = 0; i < ht->size; i++) {
-        bucket_t *curr = ht->buckets[i];
-        while (curr) {
-            char *c = strdup(curr->key);
-            void *s = strdup(curr->val);
-
-            ht_put(new_ht, c, s);
-            curr = curr->next;
-        }
-    }
-
-
-    free_hashtable(ht);
-    *ht = *new_ht;
-    free(new_ht);
+//    hashtable_t *new_ht = make_hashtable(newsize);
+//
+//    unsigned long i;
+//    for (i = 0; i < ht->size; i++) {
+//        bucket_t *curr = ht->buckets[i];
+//        while (curr) {
+//            char *c = strdup(curr->key);
+//            void *s = strdup(curr->val);
+//
+//            ht_put(new_ht, c, s);
+//            curr = curr->next;
+//        }
+//    }
+//
+//    free_hashtable(ht);
+//    *ht = *new_ht;
+//    free(new_ht);
 }
