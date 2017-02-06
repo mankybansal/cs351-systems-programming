@@ -78,8 +78,9 @@ void free_hashtable(hashtable_t *ht) {
     for (i = 0; i < ht->size; i++) {
         b = ht->buckets[i];
         while (b) {
-            ht_del(ht, b->key);
-            if(b != NULL) b = b->next;
+            bucket_t *c = b;
+            b = b->next;
+            ht_del(ht, c->key);
         }
     }
     free(b);
