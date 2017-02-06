@@ -113,9 +113,7 @@ void ht_del(hashtable_t *ht, char *key) {
 
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
 
-    hashtable_t *new_ht = malloc(sizeof(hashtable_t));
-    new_ht->size = newsize;
-    new_ht->buckets = calloc(sizeof(bucket_t *), newsize);
+    hashtable_t *new_ht = make_hashtable(newsize);
 
     unsigned long i;
     for (i = 0; i < ht->size; i++) {
@@ -127,8 +125,6 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
             ht_put(new_ht, c, s);
             curr = curr->next;
         }
-
-
     }
 
     free_hashtable(ht);
