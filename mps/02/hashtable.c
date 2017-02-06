@@ -111,6 +111,7 @@ void free_hashtable(hashtable_t *ht) {
             curr = curr->next;
         }
         free(curr);
+        free(ht->buckets[i]);
     }
 
     //free(ht); // FIXME: must free all substructures!
