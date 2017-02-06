@@ -131,6 +131,16 @@ void ht_rehash(hashtable_t *ht, unsigned long newsize) {
         }
     }
 
+    bucket_t *b;
+    for (i = 0; i < ht->size; i++) {
+        b = ht->buckets[i];
+        while (b) {
+            bucket_t *c = b;
+            b = b->next;
+            ht_del(ht, c->key);
+        }
+    }
+    free(b);
     free(ht->buckets);
     *ht = *new_ht;
     free(new_ht);
