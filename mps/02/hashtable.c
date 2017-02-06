@@ -98,8 +98,7 @@ void ht_del(hashtable_t *ht, char *key) {
     // Iterate through list
     for (; itr != NULL; prev = itr, itr = itr->next)
         if (strcmp(itr->key, key) == 0) {
-            // If clause for first element
-            if (prev == NULL)
+            if (!prev)
                 ht->buckets[idx] = itr->next;
             else
                 prev->next = itr->next;
@@ -111,29 +110,28 @@ void ht_del(hashtable_t *ht, char *key) {
         }
 
 
-    if (ht->buckets[idx] == NULL){
-        free(ht->buckets[idx]);
+    if (!itr){
+        free(itr);
         free(prev);
     }
 }
 
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
+    hashtable_t *new_ht = make_hashtable(newsize);
 
-//    hashtable_t *new_ht = make_hashtable(newsize);
-//
-//    unsigned long i;
-//    for (i = 0; i < ht->size; i++) {
-//        bucket_t *curr = ht->buckets[i];
-//        while (curr) {
-//            char *c = strdup(curr->key);
-//            void *s = strdup(curr->val);
-//
-//            ht_put(new_ht, c, s);
-//            curr = curr->next;
-//        }
-//    }
-//
-//    free_hashtable(ht);
-//    *ht = *new_ht;
-//    free(new_ht);
+    unsigned long i;
+    for (i = 0; i < ht->size; i++) {
+        bucket_t *curr = ht->buckets[i];
+        while (curr) {
+            char *c = strdup(curr->key);
+            void *s = strdup(curr->val);
+
+            ht_put(new_ht, c, s);
+            curr = curr->next;
+        }
+    }
+
+    free_hashtable(ht);
+    *ht = *new_ht;
+    free(new_ht);
 }
