@@ -23,6 +23,7 @@ hashtable_t *make_hashtable(unsigned long size) {
 }
 
 void ht_put(hashtable_t *ht, char *key, void *val) {
+
     /* FIXME: the current implementation doesn't update existing entries */
     unsigned int idx = hash(key) % ht->size;
     bucket_t *b = malloc(sizeof(bucket_t));
@@ -34,13 +35,12 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
     bucket_t *itr = ht->buckets[idx];
     int flag = 1;
 
-    if (itr != NULL) {
-        for (; itr->next != NULL; itr = itr->next) {
-            if (itr->key == key) {
-                itr->val = val;
-                flag--;
-                break;
-            }
+    for (; itr != NULL; itr = itr->next) {
+        //printf("\n\nFOUND\n\n");
+        if (strcmp(itr->key, key) == 0) {
+            itr->val = val;
+            flag--;
+            break;
         }
     }
 
@@ -50,6 +50,8 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
     } else {
         free(b);
     }
+
+    //print_ht(ht);
 
 }
 
@@ -79,32 +81,51 @@ void ht_iter(hashtable_t *ht, int (*f)(char *, void *)) {
     }
 }
 
-void free_hashtable(hashtable_t *ht) {
-    int i;
-    for (i = 0; i < ht->size; i++) {
-        bucket_t *curr;
-        while ((curr = ht->buckets[i]) != NULL) {
-            ht->buckets[i] = ht->buckets[i]->next;
-            free(curr->key);
-            free(curr->val);
-        }
+/*
+void print_ht(hashtable_t *ht) {
 
-        free(curr);
-        free(ht->buckets[i]);
+
+    printf("\n------HASHTABLE--------\n");
+    bucket_t *b;
+    unsigned long i;
+    for (i = 0; i < ht->size; i++) {
+        b = ht->buckets[i];
+        while (b) {
+            printf("  %s->%s  ", b->key, b->val);
+            b = b->next;
+        }
+        printf("\n");
     }
 
-    free(ht); // FIXME: must free all substructures!
+    printf("\n----------------------\n");
+}*/
+
+void free_hashtable(hashtable_t *ht) {
+
+    unsigned long i;
+    for (i = 0; i < ht->size; i++) {
+        bucket_t *curr = ht->buckets[i];
+        while (curr) {
+            free(curr->key);
+            free(curr->val);
+            curr = curr->next;
+        }
+        free(curr);
+    }
+
+    //free(ht); // FIXME: must free all substructures!
 }
 
 /* TODO */
 void ht_del(hashtable_t *ht, char *key) {
 
+    //print_ht(ht);
     unsigned int idx = hash(key) % ht->size;
-    bucket_t *prev = NULL, *itr;
+    bucket_t *prev = NULL, *itr = ht->buckets[idx];
 
     // Iterate through list
-    for (itr = ht->buckets[idx]; itr->next != NULL; prev = itr, itr = itr->next) {
-        if (itr->key == key) {
+    for (; itr != NULL; prev = itr, itr = itr->next) {
+        if (strcmp(itr->key,key)==0) {
             // If clause for first element
             if (prev == NULL) {
                 ht->buckets[idx] = itr->next;
@@ -119,5 +140,57 @@ void ht_del(hashtable_t *ht, char *key) {
 
 }
 
+
+/*
+
+void print_ht_stats2(hashtable_t *ht) {
+    bucket_t *b;
+    unsigned long idx, len, max_len=0, num_buckets=0, num_chains=0;
+    for (idx=0; idx<ht->size; idx++) {
+        b = ht->buckets[idx];
+        len = 0;
+        while (b) {
+            len++;
+            num_buckets++;
+            b = b->next;
+        }
+        if (len > 0) {
+            num_chains++;
+        }
+        if (max_len < len) {
+            max_len = len;
+        }
+    }
+    printf("Num buckets = %lu\n", num_buckets);
+    printf("Max chain length = %lu\n", max_len);
+    printf("Avg chain length = %0.2f\n", (float)num_buckets / num_chains);
+    printf("\n\n\n\n");
+}
+*/
+
 void ht_rehash(hashtable_t *ht, unsigned long newsize) {
+
+    hashtable_t *newht = malloc(sizeof(hashtable_t));
+    newht->size = newsize;
+    newht->buckets = calloc(sizeof(bucket_t *), newsize);
+
+    unsigned long i;
+    for (i = 0; i < ht->size; i++) {
+        bucket_t *curr = ht->buckets[i];
+        while (curr) {
+            char *c = strdup(curr->key);
+            void *s = strdup(curr->val);
+            ht_put(newht, c, s);
+
+            curr = curr->next;
+        }
+    }
+
+
+    free_hashtable(ht);
+
+    *ht = *newht;
+    //print_ht(ht);
+    //print_ht_stats2(ht);
+
 }
