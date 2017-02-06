@@ -45,7 +45,7 @@ void ht_put(hashtable_t *ht, char *key, void *val) {
         }
 
     if (flag) ht->buckets[idx] = b, free(itr);
-    else free(b),free(itr->key);
+    else free(b);
 
 }
 
