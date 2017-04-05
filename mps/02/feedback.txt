@@ -1,0 +1,56 @@
+make output
+-----------
+rm -f hashtable.o main.o hashtable hashtable-demo hashtable-demo.o
+gcc -g -Wall   -c -o hashtable.o hashtable.c
+gcc -g -Wall   -c -o main.o main.c
+main.c:6: warning: expected [error|warning|ignored] after ‘#pragma GCC diagnostic’
+main.c:7: warning: unknown option after ‘#pragma GCC diagnostic’ kind
+main.c:103: warning: expected [error|warning|ignored] after ‘#pragma GCC diagnostic’
+gcc -g -Wall -o hashtable hashtable.o main.o
+
+make diff01 output
+------------------
+
+make diff02 output
+------------------
+
+make diff03 output
+------------------
+
+make diff04 output
+------------------
+
+make diff05 output
+------------------
+
+make diff06 output
+------------------
+
+make leakcheck output
+---------------------
+==23446== Memcheck, a memory error detector
+==23446== Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
+==23446== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+==23446== Command: ./hashtable trace06.txt
+==23446== 
+==23446== 
+==23446== HEAP SUMMARY:
+==23446==     in use at exit: 0 bytes in 0 blocks
+==23446==   total heap usage: 60,045 allocs, 60,045 frees, 1,383,798 bytes allocated
+==23446== 
+==23446== All heap blocks were freed -- no leaks are possible
+==23446== 
+==23446== For counts of detected and suppressed errors, rerun with: -v
+==23446== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)
+
+Score Summary
+-------------
+Trace 01:          4/4 points
+Trace 02:          4/4 points
+Trace 03:          4/4 points
+Trace 04:          4/4 points
+Trace 05:          4/4 points
+Trace 06:          4/4 points
+Memory management: 6/6 points
+-----------------------------
+Total:           30/30 points
