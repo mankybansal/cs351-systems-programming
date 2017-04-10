@@ -1,78 +1,154 @@
+/*
+ *  MPS/04 - CACHE SIMULATOR
+ *
+ *  NAME: Mayank Bansal
+ *  EMAIL: mbansal5@hawk.iit.edu
+ *
+ *  WARNING: The code in this repo can potentially make you cry,
+ *  Wilbur the safety pig is provided below for your benefit.
+ *  Copy Wilbur the safety pig, wrap him in a comment and hope all goes well.
+ *                             _
+ *     _._ _..._ .-',     _.._(`))
+ *    '-. `     '  /-._.-'    ',/
+ *       )         \            '.
+ *      / _    _    |             \
+ *     |  a    a    /              |
+ *     \   .-.                     ;
+ *      '-('' ).-'       ,'       ;
+ *         '-;           |      .'
+ *            \           \    /
+ *            | 7  .__  _.-\   \
+ *            | |  |  ``/  /`  /
+ *           /,_|  |   /,_/   /
+ *              /,_/      '`-'
+ *
+ */
+
 #include "cachelab.h"
-#include <getopt.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdio.h>
+#include <math.h>
 
-typedef unsigned long long int mem_addr_t;
-
-typedef struct {
-    int valid;
-    mem_addr_t tag;
-    int timestamp;
-} line_st;
+typedef unsigned long long int ULLI;
 
 typedef struct {
-    line_st *lines;
-} cache_set;
+    int used, valid;
+    ULLI tag;
+} set_line_t;
 
 typedef struct {
-    cache_set *sets;
+    set_line_t *lines;
+} cache_set_t;
+
+typedef struct {
+    cache_set_t *sets;
 } cache_t;
 
-int main(int argc, char *argv[]) {
+int hitCount = 0, missCount = 0, evictionCount = 0;
+int lineCount, blockBitCount, setIndexBitCount;
+cache_t cache;
 
-    /* PRINT DEBUG */
-    printf("Arguments: %d\n", argc);
+void simulate(ULLI address) {
 
-    int setIndexBits = atoi(argv[2]);
-    int associativity = atoi(argv[4]);
-    int blockBits = atoi(argv[6]);
+    int cacheFull = 1, LRU = 0, MRU = 0;
 
-    int hit_count = 0;
-    int miss_count = 0;
-    int eviction_count = 0;
+    // FIND SET INDEX & TAG INDEX
+    int tagSize = (64 - (setIndexBitCount + blockBitCount));
+    ULLI newTag = address >> (64 - tagSize);
+    ULLI setIndex = address << tagSize >> (tagSize + blockBitCount);
+    cache_set_t set = cache.sets[setIndex];
 
-    cache_t cache;
+    // LOOK THROUGH SET FOR VALID RECORD WITH SEARCH TAG
+    for (int i = 0; i < lineCount; i++) {
+        if (!set.lines[i].valid) cacheFull = 0;
+        else if (set.lines[i].tag == newTag) {
+            set.lines[i].used++;
+            hitCount++;
+            return;
+        }
 
-    /* PRINT DEBUG */
-    printf("Set Index Bits: %d\n", setIndexBits);
-    printf("Associativity: %d\n", associativity);
-    printf("Block Bits: %d\n", blockBits);
-
-    /* ALLOCATE MEMORY FOR CACHE LINES & SETS */
-    cache.sets = malloc(setIndexBits * sizeof(cache_set));
-    int i =0;
-    while(setIndexBits--)
-        cache.sets[i].lines = malloc(sizeof(line_st) * associativity);
-
-    printf("%lu",sizeof(cache.sets));
-
-    char *parseFileName = argv[argc-1];
-    FILE *parseFile = fopen(parseFileName,"r");
-
-    if(!parseFile) {
-        printf("File could not be opened");
-        exit(0);
+        // MEANWHILE FIND LEAST & MOST RECENTLY USED RECORD
+        if (set.lines[LRU].used > set.lines[i].used)
+            LRU = i;
+        else if (set.lines[MRU].used < set.lines[i].used)
+            MRU = i;
     }
 
-    char buffer[256];
+    /*********************************
+     * CACHE MISS | TAG NOT IN CACHE *
+     *********************************/
 
-    while (fgets(buffer, sizeof(buffer), parseFile)) {
-        unsigned int address;
-        char instr;
-        int mem;
+    //INIT NEW LINE TO INSERT WITH USED COUNT HIGHER THAN MOST RECENTLY USED
+    set_line_t newLine = (set_line_t) {
+            .tag = newTag, .valid = 1, .used = set.lines[MRU].used + 1
+    };
 
-        sscanf(buffer, "%c", &instr);
+    // IF CACHE IS FULL THEN EVICT LEAST RECENTLY USED
+    if (cacheFull) {
+        set.lines[LRU] = newLine;
+        evictionCount++;
+    } else
+        //OTHERWISE FIND FIRST INVALID RECORD IN SET
+        for (int i = 0; i < lineCount; i++)
+            if (!set.lines[i].valid) {
+                set.lines[i] = newLine;
+                break;
+            }
 
-        if(instr!=' ')
-            sscanf(buffer, " %04x,%d", &address, &mem);
-        else
-            sscanf(buffer, " %c %04x,%d", &instr, &address, &mem);
+    missCount++;
+}
 
-        printf("%c %04x,%d\n", instr, address, mem);
+int main(int argc, char **argv) {
+
+    setIndexBitCount = atoi(argv[2]);
+    lineCount = atoi(argv[4]);
+    blockBitCount = atoi(argv[6]);
+    FILE *parseFile = fopen(argv[argc - 1], "r");
+
+    char instruction, buffer[256];
+    ULLI address, setCount = pow(2, setIndexBitCount);
+    int size;
+
+    if (!parseFile) exit(0);
+
+    /***************************************
+     * ALLOCATE MEMORY FOR CACHE STRUCTURE *
+     ***************************************/
+
+    cache.sets = malloc(sizeof(cache_set_t) * setCount);
+
+    for (int i = 0; i < setCount; i++) {
+        cache.sets[i].lines = malloc(sizeof(set_line_t) * lineCount);
+        for (int j = 0; j < lineCount; j++)
+            cache.sets[i].lines[j] = (set_line_t) {
+                    .valid = 0, .tag = 0, .used = 0
+            };
     }
 
-    printSummary(hit_count, miss_count, eviction_count);
+    /*******************************************
+     * PARSE TRACE FILE AND EXECUTE SIMULATION *
+     *******************************************/
+
+    while (fgets(buffer, sizeof(buffer), parseFile))
+        if (sscanf(buffer, " %c %llx,%d", &instruction, &address, &size) == 3) {
+            if (instruction == 'L' || instruction == 'S')
+                simulate(address);
+            else if (instruction == 'M') {
+                simulate(address);
+                simulate(address);
+            }
+        }
+
+    fclose(parseFile);
+
+    /****************************
+     * FREE THE CACHE STRUCTURE *
+     ****************************/
+
+    for (int i = 0; i < setCount; i++)
+        free(cache.sets[i].lines);
+    free(cache.sets);
+
+    printSummary(hitCount, missCount, evictionCount);
     return 0;
 }
