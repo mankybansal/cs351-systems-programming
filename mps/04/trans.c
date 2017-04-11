@@ -35,18 +35,18 @@ void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 
         for(int i=0; i<N; i+=blockSize)
             for(int j=0; j<M; j+=blockSize)
-                for(int k=i, r, q, temp; k<i+blockSize; k++){
+                for(int k=i, d, flag, temp; k<i+blockSize; k++){
                     for(int l=j; l<j+blockSize; l++)
                         if(k!=l)
                             B[l][k] = A[k][l];
                         else{
                             temp = A[k][l];
-                            r = k;
+                            d = k;
                             flag = 1;
                         }
                     if(flag){
-                        B[r][r] = temp;
-                        q = 0;
+                        B[d][d] = temp;
+                        flag = 0;
                     }
                 }
         return;
