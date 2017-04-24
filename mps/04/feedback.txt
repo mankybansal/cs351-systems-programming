@@ -1,0 +1,334 @@
+
+CS:APP Cache Lab: Grading Sheet for mbansal5.tar
+
+Part 1: Compiling test framework
+
+gcc -g -Wall -Werror -std=c99 -m64 -o csim csim.c cachelab.c -lm 
+gcc -g -Wall -Werror -std=c99 -m64 -o csim-ref csim-ref.c cachelab.c -lm
+gcc -g -Wall -Werror -std=c99 -m64 -o test-csim test-csim.c 
+gcc -g -Wall -Werror -std=c99 -m64 -O0 -c trans.c
+gcc -g -Wall -Werror -std=c99 -m64 -o test-trans test-trans.c cachelab.c trans.o 
+gcc -g -Wall -Werror -std=c99 -m64 -O0 -o tracegen tracegen.c trans.o cachelab.c
+
+
+Part 2: Running the driver
+
+Part A: Testing cache simulator
+Running ./test-csim
+                        Your simulator     Reference simulator
+Points (s,E,b)    Hits  Misses  Evicts    Hits  Misses  Evicts
+     3 (1,1,1)       9       8       6       9       8       6  traces/yi2.trace
+     3 (4,2,4)       4       5       2       4       5       2  traces/yi.trace
+     3 (2,1,4)       2       3       1       2       3       1  traces/dave.trace
+     3 (2,1,3)     167      71      67     167      71      67  traces/trans.trace
+     3 (2,2,3)     201      37      29     201      37      29  traces/trans.trace
+     3 (2,4,3)     212      26      10     212      26      10  traces/trans.trace
+     3 (5,1,5)     231       7       0     231       7       0  traces/trans.trace
+     6 (5,1,5)  265189   21775   21743  265189   21775   21743  traces/long.trace
+    27
+
+
+Part B: Testing transpose function
+Running ./test-trans -M 32 -N 32
+Running ./test-trans -M 64 -N 64
+Running ./test-trans -M 61 -N 67
+
+Cache Lab summary:
+                        Points   Max pts      Misses
+Csim correctness          27.0        27
+Trans perf 32x32           8.0         8         287
+Trans perf 64x64           2.3         8        1795
+Trans perf 61x67          10.0        10        1996
+          Total points    47.3        53
+
+AUTORESULT_STRING=47.3:287:1795:1996
+
+
+Part 3: Grade
+
+
+Score : 47.3 / 53
+
+Part 4: Handin files for mbansal5.tar
+
+
+*** csim.c ***
+/*
+ *  MPS/04 - CACHE SIMULATOR
+ *
+ *  NAME: Mayank Bansal
+ *  EMAIL: mbansal5@hawk.iit.edu
+ *
+ *  WARNING: The code in this repo can potentially make you cry,
+ *  Wilbur the safety pig is provided below for your benefit.
+ *  Copy Wilbur the safety pig, wrap him in a comment and hope all goes well.
+ *                             _
+ *     _._ _..._ .-',     _.._(`))
+ *    '-. `     '  /-._.-'    ',/
+ *       )         \            '.
+ *      / _    _    |             \
+ *     |  a    a    /              |
+ *     \   .-.                     ;
+ *      '-('' ).-'       ,'       ;
+ *         '-;           |      .'
+ *            \           \    /
+ *            | 7  .__  _.-\   \
+ *            | |  |  ``/  /`  /
+ *           /,_|  |   /,_/   /
+ *              /,_/      '`-'
+ *
+ */
+
+#include "cachelab.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+typedef unsigned long long int ULLI;
+
+typedef struct {
+    int used, valid;
+    ULLI tag;
+} set_line_t;
+
+typedef struct {
+    set_line_t *lines;
+} cache_set_t;
+
+typedef struct {
+    cache_set_t *sets;
+} cache_t;
+
+int hitCount = 0, missCount = 0, evictionCount = 0;
+int lineCount, blockBitCount, setIndexBitCount;
+cache_t cache;
+
+void simulate(ULLI address) {
+
+    int cacheFull = 1, LRU = 0, MRU = 0;
+
+    // FIND SET INDEX & TAG INDEX
+    int tagSize = (64 - (setIndexBitCount + blockBitCount));
+    ULLI newTag = address >> (64 - tagSize);
+    ULLI setIndex = address << tagSize >> (tagSize + blockBitCount);
+    cache_set_t set = cache.sets[setIndex];
+
+    // LOOK THROUGH SET FOR VALID RECORD WITH SEARCH TAG
+    for (int i = 0; i < lineCount; i++) {
+        if (!set.lines[i].valid) cacheFull = 0;
+        else if (set.lines[i].tag == newTag) {
+            set.lines[i].used++;
+            hitCount++;
+            return;
+        }
+
+        // MEANWHILE FIND LEAST & MOST RECENTLY USED RECORD
+        if (set.lines[LRU].used > set.lines[i].used)
+            LRU = i;
+        else if (set.lines[MRU].used < set.lines[i].used)
+            MRU = i;
+    }
+
+    /*********************************
+     * CACHE MISS | TAG NOT IN CACHE *
+     *********************************/
+
+    //INIT NEW LINE TO INSERT WITH USED COUNT HIGHER THAN MOST RECENTLY USED
+    set_line_t newLine = (set_line_t) {
+            .tag = newTag, .valid = 1, .used = set.lines[MRU].used + 1
+    };
+
+    // IF CACHE IS FULL THEN EVICT LEAST RECENTLY USED
+    if (cacheFull) {
+        set.lines[LRU] = newLine;
+        evictionCount++;
+    } else
+        //OTHERWISE FIND FIRST INVALID RECORD IN SET
+        for (int i = 0; i < lineCount; i++)
+            if (!set.lines[i].valid) {
+                set.lines[i] = newLine;
+                break;
+            }
+
+    missCount++;
+}
+
+int main(int argc, char **argv) {
+
+    setIndexBitCount = atoi(argv[2]);
+    lineCount = atoi(argv[4]);
+    blockBitCount = atoi(argv[6]);
+    FILE *parseFile = fopen(argv[argc - 1], "r");
+
+    char instruction, buffer[256];
+    ULLI address, setCount = pow(2, setIndexBitCount);
+    int size;
+
+    if (!parseFile) exit(0);
+
+    /***************************************
+     * ALLOCATE MEMORY FOR CACHE STRUCTURE *
+     ***************************************/
+
+    cache.sets = malloc(sizeof(cache_set_t) * setCount);
+
+    for (int i = 0; i < setCount; i++) {
+        cache.sets[i].lines = malloc(sizeof(set_line_t) * lineCount);
+        for (int j = 0; j < lineCount; j++)
+            cache.sets[i].lines[j] = (set_line_t) {
+                    .valid = 0, .tag = 0, .used = 0
+            };
+    }
+
+    /*******************************************
+     * PARSE TRACE FILE AND EXECUTE SIMULATION *
+     *******************************************/
+
+    while (fgets(buffer, sizeof(buffer), parseFile))
+        if (sscanf(buffer, " %c %llx,%d", &instruction, &address, &size) == 3) {
+            if (instruction == 'L' || instruction == 'S')
+                simulate(address);
+            else if (instruction == 'M') {
+                simulate(address);
+                simulate(address);
+            }
+        }
+
+    fclose(parseFile);
+
+    /****************************
+     * FREE THE CACHE STRUCTURE *
+     ****************************/
+
+    for (int i = 0; i < setCount; i++)
+        free(cache.sets[i].lines);
+    free(cache.sets);
+
+    printSummary(hitCount, missCount, evictionCount);
+    return 0;
+}
+
+*** trans.c ***
+/*
+ * trans.c - Matrix transpose B = A^T
+ *
+ * Each transpose function must have a prototype of the form:
+ * void trans(int M, int N, int A[N][M], int B[M][N]);
+ *
+ * A transpose function is evaluated by counting the number of misses
+ * on a 1KB direct mapped cache with a block size of 32 bytes.
+ */
+#include <stdio.h>
+#include "cachelab.h"
+
+int is_transpose(int M, int N, int A[N][M], int B[M][N]);
+
+/*
+ * transpose_submit - This is the solution transpose function that you
+ *     will be graded on for Part B of the assignment. Do not change
+ *     the description string "Transpose submission", as the driver
+ *     searches for that string to identify the transpose function to
+ *     be graded.
+ */
+
+char transpose_submit_desc[] = "Transpose submission";
+void transpose_submit(int M, int N, int A[N][M], int B[M][N])
+{
+
+    int blockSize;
+
+    if(N==32 || N==64){
+        if(N==32)
+            blockSize = 8;
+
+        if(N==64)
+            blockSize = 4;
+
+        for(int i=0; i<N; i+=blockSize)
+            for(int j=0; j<M; j+=blockSize)
+                for(int k=i, d, flag, temp; k<i+blockSize; k++){
+                    for(int l=j; l<j+blockSize; l++)
+                        if(k!=l)
+                            B[l][k] = A[k][l];
+                        else{
+                            temp = A[k][l];
+                            d = k;
+                            flag = 1;
+                        }
+                    if(flag){
+                        B[d][d] = temp;
+                        flag = 0;
+                    }
+                }
+        return;
+    }
+
+    if(N==67){
+        blockSize=14;
+
+        for(int i=0; i<N; i+=blockSize)
+            for(int j=0; j<M; j+=blockSize)
+                for(int k=i; k<i+blockSize && k<N; k++)
+                    for(int l=j; l<j+blockSize && l<M; l++)
+                        B[l][k]=A[k][l];
+        return;
+    }
+}
+
+/*
+ * You can define additional transpose functions below. We've defined
+ * a simple one below to help you get started.
+ */
+
+/*
+ * trans - A simple baseline transpose function, not optimized for the cache.
+ */
+char trans_desc[] = "Simple row-wise scan transpose";
+void trans(int M, int N, int A[N][M], int B[M][N])
+{
+    int i, j, tmp;
+
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < M; j++) {
+            tmp = A[i][j];
+            B[j][i] = tmp;
+        }
+    }
+
+}
+
+/*
+ * registerFunctions - This function registers your transpose
+ *     functions with the driver.  At runtime, the driver will
+ *     evaluate each of the registered functions and summarize their
+ *     performance. This is a handy way to experiment with different
+ *     transpose strategies.
+ */
+void registerFunctions()
+{
+    /* Register your solution function */
+    registerTransFunction(transpose_submit, transpose_submit_desc);
+
+    /* Register any additional transpose functions */
+    registerTransFunction(trans, trans_desc);
+
+}
+
+/*
+ * is_transpose - This helper function checks if B is the transpose of
+ *     A. You can check the correctness of your transpose by calling
+ *     it before returning from the transpose function.
+ */
+int is_transpose(int M, int N, int A[N][M], int B[M][N])
+{
+    int i, j;
+
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < M; ++j) {
+            if (A[i][j] != B[j][i]) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
