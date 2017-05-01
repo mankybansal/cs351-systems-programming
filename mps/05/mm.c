@@ -202,7 +202,7 @@ void mm_free(void *ptr) {
 void *mm_realloc(void *ptr, size_t size) {
     size_t newSize = ALIGN(size + SIZE_T_SIZE + BLK_FTR_SIZE);
     blockHDR *bp = (blockHDR *) ((char *) ptr - sizeof(size_t)),
-            *next = (blockHDR *) ((char *) bp + PCOMP(bp));
+            *next = (blockHDR *) ((char *) bp + (bp->size &= ~1));
 
     if (PCOMP(bp) > newSize)
         return ptr;
