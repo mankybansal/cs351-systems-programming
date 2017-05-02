@@ -76,8 +76,8 @@ struct footer {
 
 //BIN INFO & HELPERS
 #define BIN_COUNT 16
-struct header bins[BIN_COUNT];
-int i, binSize[BIN_COUNT];
+struct header *bins;
+int i, *binSize;
 
 int getBin(size_t size) {
     for (i = 0; i < BIN_COUNT; i++)
@@ -90,6 +90,9 @@ int getBin(size_t size) {
  ***********************/
 
 int mm_init(void) {
+
+    bins = mem_sbrk(BIN_COUNT * BLK_HDR_SIZE);
+    binSize = mem_sbrk(BIN_COUNT * sizeof(int));
 
     binSize[0] = 8;
     for (i = 1; i < BIN_COUNT; i++)
